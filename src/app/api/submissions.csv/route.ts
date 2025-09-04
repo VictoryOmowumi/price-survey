@@ -13,12 +13,12 @@ export async function GET(req: Request) {
 
     await dbConnect();
 
-    const query: Record<string, any> = {};
+    const query: Record<string, unknown> = {};
     
     if (from || to) {
-      query.collectedAt = {};
-      if (from) query.collectedAt.$gte = new Date(from);
-      if (to) query.collectedAt.$lte = new Date(to);
+      query.collectedAt = {} as Record<string, unknown>;
+      if (from) (query.collectedAt as Record<string, unknown>).$gte = new Date(from);
+      if (to) (query.collectedAt as Record<string, unknown>).$lte = new Date(to);
     }
     
     if (area) query.area = new RegExp(area, 'i');
@@ -53,7 +53,7 @@ export async function GET(req: Request) {
 
     // Create CSV rows
     const rows = submissions.flatMap(submission => 
-      submission.items.map((item: any) => [
+      submission.items.map((item: { productName: string; buyPrice: number; sellPrice: number }) => [
         submission._id,
         submission.customerName,
         submission.customerPhone || '',
@@ -76,7 +76,7 @@ export async function GET(req: Request) {
 
     // Combine headers and rows
     const csvContent = [headers, ...rows]
-      .map(row => row.map((field: any) => `"${String(field).replace(/"/g, '""')}"`).join(','))
+      .map(row => row.map((field: unknown) => `"${String(field).replace(/"/g, '""')}"`).join(','))
       .join('\n');
 
     return new NextResponse(csvContent, {

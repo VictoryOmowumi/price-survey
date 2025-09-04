@@ -27,7 +27,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, id: String(doc._id) }, { status: 201 });
   } catch (err: unknown) {
     // Duplicate guard (unique index)
-    if ((err as any)?.code === 11000) {
+    if ((err as { code?: number })?.code === 11000) {
       return NextResponse.json(
         { ok: false, code: "DUPLICATE", message: "Already captured for this outlet today" },
         { status: 409 }
@@ -57,12 +57,12 @@ export async function GET(req: Request) {
 
     await dbConnect();
 
-    const query: Record<string, any> = {};
+    const query: Record<string, unknown> = {};
     
     if (from || to) {
-      query.collectedAt = {};
-      if (from) query.collectedAt.$gte = new Date(from);
-      if (to) query.collectedAt.$lte = new Date(to);
+      query.collectedAt = {} as Record<string, unknown>;
+      if (from) (query.collectedAt as Record<string, unknown>).$gte = new Date(from);
+      if (to) (query.collectedAt as Record<string, unknown>).$lte = new Date(to);
     }
     
     if (area) query.area = new RegExp(area, 'i');
