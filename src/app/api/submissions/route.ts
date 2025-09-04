@@ -81,6 +81,7 @@ export async function GET(req: Request) {
         customerName: item.customerName,
         customerPhone: item.customerPhone,
         outletName: item.outletName,
+        outletAddress: item.outletAddress,
         area: item.area,
         geo: item.geo,
         items: item.items,

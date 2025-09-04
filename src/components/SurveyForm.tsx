@@ -29,6 +29,7 @@ const formSchema = z.object({
   customerName: z.string().min(2, 'Customer name must be at least 2 characters'),
   customerPhone: z.string().optional(),
   outletName: z.string().min(2, 'Outlet name must be at least 2 characters'),
+  outletAddress: z.string().min(2, 'Outlet address must be at least 2 characters'),
   area: z.string().min(2, 'Area must be at least 2 characters'),
 });
 
@@ -305,6 +306,21 @@ export function SurveyForm() {
                   <p className="text-sm text-red-500">{errors.area.message}</p>
                 )}
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="outletAddress" className="text-sm font-medium text-gray-700">
+                Outlet Address *
+              </Label>
+              <Input
+                id="outletAddress"
+                {...register('outletAddress')}
+                placeholder="Enter full outlet address"
+                className={`h-12 ${errors.outletAddress ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'}`}
+              />
+              {errors.outletAddress && (
+                <p className="text-sm text-red-500">{errors.outletAddress.message}</p>
+              )}
             </div>
           </CardContent>
         </Card>

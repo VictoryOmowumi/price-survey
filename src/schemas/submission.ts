@@ -18,6 +18,7 @@ export const SubmissionCreate = z.object({
   customerName: z.string().min(2, "Customer name must be at least 2 characters"),
   customerPhone: z.string().regex(phoneRegex, "Invalid phone number").optional().or(z.literal("")),
   outletName: z.string().min(2, "Outlet name must be at least 2 characters"),
+  outletAddress: z.string().min(2, "Outlet address must be at least 2 characters"),
   area: z.string().min(2, "Area must be at least 2 characters"),
   items: z.array(ProductLine).min(1, "At least one product must be selected"),
   geo: z

@@ -27,6 +27,7 @@ const SubmissionSchema = new Schema(
     customerName: { type: String, required: true },
     customerPhone: { type: String },
     outletName: { type: String, required: true },
+    outletAddress: { type: String, required: true },
     area: { type: String, required: true },
     geo: { type: GeoSchema, default: null },
     items: { 
