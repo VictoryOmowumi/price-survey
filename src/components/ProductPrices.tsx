@@ -27,7 +27,7 @@ export function ProductPrices({ selectedProducts, onProductsChange }: ProductPri
     if (checked) {
       // Add product
       const newProduct: ProductLineType = {
-        productName: productName as any,
+        productName: productName as ProductLineType['productName'],
         buyPrice: 0,
         sellPrice: 0,
       };

@@ -1,6 +1,5 @@
 'use client';
 
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { MapPin, MapPinOff, Loader2 } from 'lucide-react';
 import { useGeolocation } from '@/hooks/useGeolocation';
@@ -28,7 +27,7 @@ export function GeoStatus() {
             {data.accuracy && ` (±${Math.round(data.accuracy)}m)`}
           </div>
           <div className="text-xs text-green-500 mt-1">
-            Tap refresh if you've moved to a new location
+            Tap refresh if you&apos;ve moved to a new location
           </div>
         </div>
         <Button

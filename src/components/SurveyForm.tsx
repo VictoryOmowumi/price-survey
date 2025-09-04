@@ -35,7 +35,7 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 export function SurveyForm() {
-  const { data: geoData, getCurrentPosition, loading: geoLoading } = useGeolocation();
+  const { data: geoData, getCurrentPosition } = useGeolocation();
   const { addToQueue, isOnline } = useOfflineQueue();
   const [selectedProducts, setSelectedProducts] = useState<ProductLineType[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -46,7 +46,6 @@ export function SurveyForm() {
     formState: { errors },
     reset,
     setValue,
-    watch,
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
   });
@@ -107,7 +106,6 @@ export function SurveyForm() {
           });
 
           if (response.ok) {
-            const result = await response.json();
             toast.success('Survey submitted successfully!');
             clearAllFields();
             return; // Exit early on success
@@ -119,12 +117,12 @@ export function SurveyForm() {
             const result = await response.json();
             throw new Error(result.error || 'Failed to submit survey');
           }
-        } catch (fetchError: any) {
+        } catch (fetchError: unknown) {
           // Handle network/SSL errors - check if it might have succeeded
           console.warn('Network error during submission:', fetchError);
           
           // If it's an SSL error, verify if the submission actually succeeded
-          if (fetchError.message?.includes('SSL') || fetchError.message?.includes('tlsv1')) {
+          if ((fetchError as Error).message?.includes('SSL') || (fetchError as Error).message?.includes('tlsv1')) {
             try {
               const verifyResponse = await fetch('/api/submissions/verify', {
                 method: 'POST',
@@ -162,11 +160,11 @@ export function SurveyForm() {
         toast.success('Survey saved offline. Will sync when connection is restored.');
         clearAllFields();
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Submission error:', error);
       
       // Check if it's an SSL error that might indicate successful submission
-      if (error.message?.includes('SSL') || error.message?.includes('tlsv1')) {
+      if ((error as Error).message?.includes('SSL') || (error as Error).message?.includes('tlsv1')) {
         try {
           const verifyResponse = await fetch('/api/submissions/verify', {
             method: 'POST',
@@ -206,7 +204,7 @@ export function SurveyForm() {
           });
           toast.success('Survey saved offline due to connection issues.');
           clearAllFields();
-        } catch (queueError) {
+        } catch {
           toast.error('Failed to save survey. Please try again.');
         }
       } else {
@@ -221,6 +219,7 @@ export function SurveyForm() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="max-w-2xl mx-auto p-4 space-y-6">
         <div className="text-center  flex flex-col items-center gap-2">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/sbclogo.png" alt="SBC Logo" className="h-16 w-auto" />
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Seven-Up Bottling Company</h1>
           <p className="text-gray-600 text-sm">Price Survey</p>

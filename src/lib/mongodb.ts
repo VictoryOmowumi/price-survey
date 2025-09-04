@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://victorybalogun_db_user:2Qozs3MjIf6GT8Hf@pricesurvey.eqfhmt6.mongodb.net/?retryWrites=true&w=majority&appName=priceSurvey';
+// const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://victorybalogun_db_user:2Qozs3MjIf6GT8Hf@pricesurvey.eqfhmt6.mongodb.net/?retryWrites=true&w=majority&appName=priceSurvey';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/priceSurvey';
 
 if (!MONGODB_URI) {
   throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
@@ -11,6 +12,10 @@ if (!MONGODB_URI) {
  * in development. This prevents connections growing exponentially
  * during API Route usage.
  */
+declare global {
+  var mongoose: any;
+}
+
 let cached = global.mongoose;
 
 if (!cached) {

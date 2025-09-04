@@ -36,7 +36,7 @@ export function OfflineSync({ className }: OfflineSyncProps) {
       if (result.failed > 0) {
         toast.error(`Failed to sync ${result.failed} submission${result.failed > 1 ? 's' : ''}`);
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to sync submissions. Please try again.');
     } finally {
       setIsRetrying(false);

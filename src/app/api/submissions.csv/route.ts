@@ -13,7 +13,7 @@ export async function GET(req: Request) {
 
     await dbConnect();
 
-    const query: any = {};
+    const query: Record<string, any> = {};
     
     if (from || to) {
       query.collectedAt = {};
@@ -53,7 +53,7 @@ export async function GET(req: Request) {
 
     // Create CSV rows
     const rows = submissions.flatMap(submission => 
-      submission.items.map(item => [
+      submission.items.map((item: any) => [
         submission._id,
         submission.customerName,
         submission.customerPhone || '',
@@ -76,7 +76,7 @@ export async function GET(req: Request) {
 
     // Combine headers and rows
     const csvContent = [headers, ...rows]
-      .map(row => row.map(field => `"${String(field).replace(/"/g, '""')}"`).join(','))
+      .map(row => row.map((field: any) => `"${String(field).replace(/"/g, '""')}"`).join(','))
       .join('\n');
 
     return new NextResponse(csvContent, {
@@ -86,9 +86,9 @@ export async function GET(req: Request) {
         'Content-Disposition': `attachment; filename="price-survey-${new Date().toISOString().split('T')[0]}.csv"`,
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     return NextResponse.json(
-      { ok: false, error: error.message },
+      { ok: false, error: (error as Error).message },
       { status: 500 }
     );
   }

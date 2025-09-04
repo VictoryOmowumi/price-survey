@@ -32,7 +32,7 @@ const SubmissionSchema = new Schema(
     items: { 
       type: [ItemSchema], 
       validate: {
-        validator: function(v: any[]) {
+        validator: function(v: unknown[]) {
           return v && v.length > 0;
         },
         message: 'At least one item is required'

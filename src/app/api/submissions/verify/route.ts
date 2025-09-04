@@ -22,9 +22,9 @@ export async function POST(req: Request) {
       exists: !!submission,
       id: submission?._id 
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     return NextResponse.json(
-      { ok: false, error: error.message },
+      { ok: false, error: (error as Error).message },
       { status: 500 }
     );
   }

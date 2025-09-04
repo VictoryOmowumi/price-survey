@@ -25,9 +25,9 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ ok: true, id: String(doc._id) }, { status: 201 });
-  } catch (err: any) {
+  } catch (err: unknown) {
     // Duplicate guard (unique index)
-    if (err?.code === 11000) {
+    if ((err as any)?.code === 11000) {
       return NextResponse.json(
         { ok: false, code: "DUPLICATE", message: "Already captured for this outlet today" },
         { status: 409 }
@@ -37,12 +37,12 @@ export async function POST(req: Request) {
     // Zod validation error
     if (err instanceof z.ZodError) {
       return NextResponse.json(
-        { ok: false, code: "VALIDATION_ERROR", errors: err.errors },
+        { ok: false, code: "VALIDATION_ERROR", errors: err.issues },
         { status: 400 }
       );
     }
     
-    return NextResponse.json({ ok: false, error: err.message }, { status: 400 });
+    return NextResponse.json({ ok: false, error: (err as Error).message }, { status: 400 });
   }
 }
 
@@ -57,7 +57,7 @@ export async function GET(req: Request) {
 
     await dbConnect();
 
-    const query: any = {};
+    const query: Record<string, any> = {};
     
     if (from || to) {
       query.collectedAt = {};
@@ -92,9 +92,9 @@ export async function GET(req: Request) {
       })),
       total: items.length 
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     return NextResponse.json(
-      { ok: false, error: error.message },
+      { ok: false, error: (error as Error).message },
       { status: 500 }
     );
   }
