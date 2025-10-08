@@ -48,6 +48,14 @@ export async function POST(req: Request) {
 
 export async function GET(req: Request) {
   try {
+    // Check if we're in a build environment
+    if (process.env.NODE_ENV === 'production' && !process.env.MONGODB_URI) {
+      return NextResponse.json(
+        { ok: false, error: 'Database not configured' },
+        { status: 503 }
+      );
+    }
+
     const { searchParams } = new URL(req.url);
     const from = searchParams.get('from');
     const to = searchParams.get('to');
