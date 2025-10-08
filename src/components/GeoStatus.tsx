@@ -5,7 +5,7 @@ import { MapPin, MapPinOff, Loader2 } from 'lucide-react';
 import { useGeolocation } from '@/hooks/useGeolocation';
 
 export function GeoStatus() {
-  const { data, loading, error, retry } = useGeolocation();
+  const { data, loading, error, retry, getCurrentPosition } = useGeolocation();
 
   if (loading) {
     return (
@@ -44,17 +44,20 @@ export function GeoStatus() {
 
   if (error) {
     return (
-      <div className="flex items-center gap-3 p-4 bg-yellow-50 rounded-lg border-2 border-yellow-200 shadow-sm">
-        <MapPinOff className="h-5 w-5 text-yellow-600" />
+      <div className="flex items-center gap-3 p-4 bg-red-50 rounded-lg border-2 border-red-200 shadow-sm">
+        <MapPinOff className="h-5 w-5 text-red-600" />
         <div className="flex-1">
-          <span className="text-sm text-yellow-700 font-semibold">Location unavailable</span>
-          <div className="text-xs text-yellow-600 mt-1">{error}</div>
+          <span className="text-sm text-red-700 font-semibold">Location required</span>
+          <div className="text-xs text-red-600 mt-1">{error}</div>
+          <div className="text-xs text-red-500 mt-1">
+            You must allow location access to submit this survey
+          </div>
         </div>
         <Button
           variant="outline"
           size="sm"
           onClick={retry}
-          className="text-xs h-8 px-3 border-yellow-300 text-yellow-700 hover:bg-yellow-100"
+          className="text-xs h-8 px-3 border-red-300 text-red-700 hover:bg-red-100"
         >
           Retry
         </Button>
@@ -62,5 +65,24 @@ export function GeoStatus() {
     );
   }
 
-  return null;
+  // Initial state - no location captured yet
+  return (
+    <div className="flex items-center gap-3 p-4 bg-orange-50 rounded-lg border-2 border-orange-200 shadow-sm">
+      <MapPin className="h-5 w-5 text-orange-600" />
+      <div className="flex-1">
+        <span className="text-sm text-orange-700 font-semibold">Location required</span>
+        <div className="text-xs text-orange-600 mt-1">
+          You must capture your location to submit this survey
+        </div>
+      </div>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={getCurrentPosition}
+        className="text-xs h-8 px-3 border-orange-300 text-orange-700 hover:bg-orange-100"
+      >
+        Capture Location
+      </Button>
+    </div>
+  );
 }

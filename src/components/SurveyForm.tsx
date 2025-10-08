@@ -9,7 +9,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { GeoStatus } from './GeoStatus';
 import { ProductPrices } from './ProductPrices';
 import { OfflineSync } from './OfflineSync';
 import { useGeolocation } from '@/hooks/useGeolocation';
@@ -40,6 +39,7 @@ export function SurveyForm() {
   const { addToQueue, isOnline } = useOfflineQueue();
   const [selectedProducts, setSelectedProducts] = useState<ProductLineType[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formKey, setFormKey] = useState(0);
 
   const {
     register,
@@ -54,7 +54,7 @@ export function SurveyForm() {
   const clearAllFields = () => {
     reset();
     setSelectedProducts([]);
-    setValue('area', '');
+    setFormKey(prev => prev + 1); // Force re-render of form components
   };
 
   const onSubmit = async (data: FormData) => {
@@ -76,14 +76,21 @@ export function SurveyForm() {
     setIsSubmitting(true);
 
     try {
-      // Capture location at the moment of submission (professional approach)
+      // Capture location at the moment of submission
       let currentLocation = geoData;
       if (!currentLocation) {
         try {
           currentLocation = await getCurrentPosition();
+          if (!currentLocation) {
+            toast.error('Location access is required to submit this survey. Please allow location access and try again.');
+            setIsSubmitting(false);
+            return;
+          }
         } catch (locationError) {
           console.warn('Location capture failed:', locationError);
-          // Continue without location - user can still submit
+          toast.error('Location access is required to submit this survey. Please allow location access and try again.');
+          setIsSubmitting(false);
+          return;
         }
       }
 
@@ -156,7 +163,7 @@ export function SurveyForm() {
           throw fetchError;
         }
       } else {
-        // Add to offline queue
+        // Add to offline queue (with location data)
         await addToQueue(submission);
         toast.success('Survey saved offline. Will sync when connection is restored.');
         clearAllFields();
@@ -217,7 +224,7 @@ export function SurveyForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:bg-gray-900">
       <div className="max-w-2xl mx-auto p-4 space-y-6">
         <div className="text-center  flex flex-col items-center gap-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -228,7 +235,7 @@ export function SurveyForm() {
 
       <OfflineSync />
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form key={formKey} onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Customer Information */}
         <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm !pt-0">
           <CardHeader className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-t-lg py-3">
@@ -325,8 +332,6 @@ export function SurveyForm() {
           </CardContent>
         </Card>
 
-        {/* Geolocation Status */}
-        <GeoStatus />
 
         {/* Products and Prices */}
         <ProductPrices
@@ -340,13 +345,13 @@ export function SurveyForm() {
             {/* Location Capture Notice */}
             <div className="text-center">
               <p className="text-xs text-gray-500">
-                📍 Your current location will be captured when you submit this survey
+                📍 Location capture is required to submit this survey
               </p>
             </div>
             
             <Button
               type="submit"
-              className="w-full h-14 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-200"
+              className="w-full h-10 md:h-14 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-200"
               disabled={isSubmitting || selectedProducts.length === 0}
             >
               {isSubmitting ? (

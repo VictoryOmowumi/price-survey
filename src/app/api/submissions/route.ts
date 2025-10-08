@@ -54,6 +54,8 @@ export async function GET(req: Request) {
     const area = searchParams.get('area');
     const outletName = searchParams.get('outletName');
     const hasGeo = searchParams.get('hasGeo');
+    const limit = searchParams.get('limit');
+    const page = searchParams.get('page');
 
     await dbConnect();
 
@@ -70,9 +72,25 @@ export async function GET(req: Request) {
     if (hasGeo === 'true') query.geo = { $ne: null };
     if (hasGeo === 'false') query.geo = null;
 
-    const items = await Submission.find(query)
-      .sort({ collectedAt: -1 })
-      .limit(1000);
+    // Get total count for pagination
+    const totalCount = await Submission.countDocuments(query);
+
+    // Build query with optional pagination
+    let mongoQuery = Submission.find(query).sort({ collectedAt: -1 });
+    
+    // Apply pagination if specified
+    if (limit && page) {
+      const limitNum = parseInt(limit, 10);
+      const pageNum = parseInt(page, 10);
+      const skip = (pageNum - 1) * limitNum;
+      mongoQuery = mongoQuery.skip(skip).limit(limitNum);
+    } else if (limit) {
+      // Just limit without pagination
+      mongoQuery = mongoQuery.limit(parseInt(limit, 10));
+    }
+    // If no limit specified, return all results
+
+    const items = await mongoQuery;
 
     return NextResponse.json({ 
       ok: true, 
@@ -91,7 +109,9 @@ export async function GET(req: Request) {
         createdAt: item.createdAt,
         updatedAt: item.updatedAt,
       })),
-      total: items.length 
+      total: totalCount,
+      returned: items.length,
+      hasMore: limit && page ? (parseInt(page, 10) * parseInt(limit, 10)) < totalCount : false
     });
   } catch (error: unknown) {
     return NextResponse.json(
