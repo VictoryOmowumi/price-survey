@@ -13,7 +13,7 @@ const ItemSchema = new Schema(
   {
     productName: {
       type: String,
-      enum: ["SBC 40cl", "NBC 40cl", "RC Cola 40cl", "Pop Cola 40cl", "Bigi 40cl"],
+      enum: ["SBC 40cl", "NBC 35cl", "RC Cola 40cl", "LaCasera 35cl", "Bigi 35cl"],
       required: true,
     },
     buyPrice: { type: Number, required: true, min: 0 },

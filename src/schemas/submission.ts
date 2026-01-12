@@ -3,10 +3,10 @@ import { z } from "zod";
 export const ProductLine = z.object({
   productName: z.enum([
     "SBC 40cl",
-    "NBC 40cl", 
+    "NBC 35cl", 
     "RC Cola 40cl",
-    "Pop Cola 40cl",
-    "Bigi 40cl",
+    "LaCasera 35cl",
+    "Bigi 35cl",
   ]),
   buyPrice: z.number().positive("Buy price must be greater than 0"),
   sellPrice: z.number().positive("Sell price must be greater than 0"),
