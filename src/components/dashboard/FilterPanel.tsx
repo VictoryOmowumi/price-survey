@@ -37,12 +37,31 @@ const LAGOS_LGAS = [
   "Surulere",
 ];
 
+const PRODUCTS = [
+  { label: "SBC 40cl", value: "SBC 40cl" },
+  { label: "NBC 35cl", value: "NBC 35cl" },
+  { label: "CocaCola Original RGB 35cl", value: "CocaCola Original RGB 35cl" },
+  { label: "CocaCola Original PET 35cl", value: "CocaCola Original PET 35cl" },
+  { label: "RC Cola 40cl", value: "RC Cola 40cl" },
+  { label: "LaCasera 35cl", value: "LaCasera 35cl" },
+  { label: "Bigi 35cl", value: "Bigi 35cl" },
+];
+
+const PRODUCT_OPTIONS = PRODUCTS.map((product) => ({
+  label: product.label,
+  value: product.value,
+}));
+
 interface FilterState {
   from: string;
   to: string;
   area: string;
   outletName: string;
   hasGeo: string;
+  product: string;
+  productName: string;
+  buyPrice: number;
+  sellPrice: number;
 }
 
 interface FilterPanelProps {
@@ -256,6 +275,31 @@ export function FilterPanel({
                     <SelectContent>
                       <SelectItem value="true">With Location</SelectItem>
                       <SelectItem value="false">Without Location</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {/* Product Section */}
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="product"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Product
+                  </Label>
+                  <Select
+                    onValueChange={(value) =>
+                      onFiltersChange({ ...filters, product: value })
+                    }
+                  >
+                    <SelectTrigger className="h-10">
+                      <SelectValue placeholder="Select product" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PRODUCT_OPTIONS.map((product) => (
+                        <SelectItem key={product.value} value={product.value}>
+                          {product.label}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>

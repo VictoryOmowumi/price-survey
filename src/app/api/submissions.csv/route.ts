@@ -18,6 +18,10 @@ export async function GET(req: Request) {
     const area = searchParams.get('area');
     const outletName = searchParams.get('outletName');
     const hasGeo = searchParams.get('hasGeo');
+    const product = searchParams.get('product');
+    const productName = searchParams.get('productName');
+    const buyPrice = searchParams.get('buyPrice');
+    const sellPrice = searchParams.get('sellPrice');
 
     await dbConnect();
 
@@ -33,6 +37,33 @@ export async function GET(req: Request) {
     if (outletName) query.outletName = new RegExp(outletName, 'i');
     if (hasGeo === 'true') query.geo = { $ne: null };
     if (hasGeo === 'false') query.geo = null;
+
+    // Product filters live inside the `items` array.
+    const itemMatch: Record<string, unknown> = {};
+    if (product) {
+      const escapedProduct = product.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      itemMatch.productName = new RegExp(`^${escapedProduct}$`, 'i');
+    } else if (productName) {
+      itemMatch.productName = new RegExp(productName, 'i');
+    }
+
+    if (buyPrice) {
+      const parsedBuyPrice = Number(buyPrice);
+      if (!Number.isNaN(parsedBuyPrice)) {
+        itemMatch.buyPrice = parsedBuyPrice;
+      }
+    }
+
+    if (sellPrice) {
+      const parsedSellPrice = Number(sellPrice);
+      if (!Number.isNaN(parsedSellPrice)) {
+        itemMatch.sellPrice = parsedSellPrice;
+      }
+    }
+
+    if (Object.keys(itemMatch).length > 0) {
+      query.items = { $elemMatch: itemMatch };
+    }
 
     const submissions = await Submission.find(query)
       .sort({ collectedAt: -1 })

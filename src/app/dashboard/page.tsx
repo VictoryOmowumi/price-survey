@@ -51,6 +51,10 @@ interface FilterState {
   area: string;
   outletName: string;
   hasGeo: string;
+  product: string;
+  productName: string;
+  buyPrice: number;
+  sellPrice: number;
 }
 
 type ViewMode = "data" | "analytics";
@@ -69,6 +73,10 @@ export default function Dashboard() {
     area: "",
     outletName: "",
     hasGeo: "",
+    product: "",
+    productName: "",
+    buyPrice: 0,
+    sellPrice: 0,
   });
 
   const fetchData = useCallback(async () => {
@@ -80,6 +88,10 @@ export default function Dashboard() {
       if (filters.area) params.append("area", filters.area);
       if (filters.outletName) params.append("outletName", filters.outletName);
       if (filters.hasGeo) params.append("hasGeo", filters.hasGeo);
+      if (filters.product) params.append("product", filters.product);
+      if (filters.productName) params.append("productName", filters.productName);
+      if (filters.buyPrice) params.append("buyPrice", filters.buyPrice.toString());
+      if (filters.sellPrice) params.append("sellPrice", filters.sellPrice.toString());
 
       const response = await fetch(`/api/submissions?${params.toString()}`);
       const result: ApiResponse = await response.json();
@@ -107,7 +119,10 @@ export default function Dashboard() {
       if (filters.area) params.append("area", filters.area);
       if (filters.outletName) params.append("outletName", filters.outletName);
       if (filters.hasGeo) params.append("hasGeo", filters.hasGeo);
-
+      if (filters.product) params.append("product", filters.product);
+      if (filters.productName) params.append("productName", filters.productName);
+      if (filters.buyPrice) params.append("buyPrice", filters.buyPrice.toString());
+      if (filters.sellPrice) params.append("sellPrice", filters.sellPrice.toString());
       const response = await fetch(`/api/submissions.csv?${params.toString()}`);
 
       if (response.ok) {
@@ -141,6 +156,10 @@ export default function Dashboard() {
       area: "",
       outletName: "",
       hasGeo: "",
+      product: "",
+      productName: "",
+      buyPrice: 0,
+      sellPrice: 0,
     });
     setCurrentPage(1);
   };
