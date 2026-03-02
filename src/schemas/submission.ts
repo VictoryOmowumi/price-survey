@@ -3,6 +3,7 @@ import { z } from "zod";
 export const ProductLine = z.object({
   productName: z.enum([
     "SBC 40cl",
+    "Pepsi Fizz",	
     "NBC 35cl", 
     "CocaCola Original RGB 35cl",
     "CocaCola Original PET 35cl",
